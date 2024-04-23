@@ -1,0 +1,299 @@
+Nama: Ahmad Ali Zulfakor (kelompok 4)
+Tuga Data Base 2
+  
+  3.2
+  1.
+   SELECT COUNT(*) AS jumlah_pelanggan_1998
+    -> FROM pelanggan
+    -> WHERE YEAR(tgl_lahir) = 1998;
++-----------------------+
+| jumlah_pelanggan_1998 |
++-----------------------+
+|                     0 |
++-----------------------+
+
+2.
+MariaDB [dbpos_sib6]> SELECT COUNT(*) AS jumlah_pelanggan_perempuan_jakarta
+    ->   FROM pelanggan
+    ->   WHERE jk = 'p' AND tmp_lahir = 'Jakarta';
++------------------------------------+
+| jumlah_pelanggan_perempuan_jakarta |
++------------------------------------+
+|                                  3 |
++------------------------------------+
+
+3.
+SELECT SUM(stok) AS total_stok_produk_dibawah_10rb
+    -> FROM produk
+    -> WHERE harga_jual < 10000;
++--------------------------------+
+| total_stok_produk_dibawah_10rb |
++--------------------------------+
+|                             79 |
++--------------------------------+
+
+4.
+MariaDB [dbpos_sib6]> SELECT COUNT(*) AS jumlah_produk_kode_K
+    -> FROM produk
+    -> WHERE kode LIKE 'K%';
++----------------------+
+| jumlah_produk_kode_K |
++----------------------+
+|                    1 |
++----------------------+
+
+5.
+MariaDB [dbpos_sib6]> SELECT AVG(harga_jual) AS rata_rata_harga_jual_produk_diatas_1jt
+    -> FROM produk
+    -> WHERE harga_jual > 1000000;
++----------------------------------------+
+| rata_rata_harga_jual_produk_diatas_1jt |
++----------------------------------------+
+|                     31387733.333333332 |
++----------------------------------------+
+
+6.
+MariaDB [dbpos_sib6]> SELECT MAX(stok) AS jumlah_stok_terbesar
+    -> FROM produk;
++----------------------+
+| jumlah_stok_terbesar |
++----------------------+
+|                   53 |
++----------------------+
+
+7.
+MariaDB [dbpos_sib6]> SELECT COUNT(*) AS jumlah_produk_stok_kurang_dari_minimal
+    -> FROM produk
+    -> WHERE stok < min_stok;
++----------------------------------------+
+| jumlah_produk_stok_kurang_dari_minimal |
++----------------------------------------+
+|                                      4 |
++----------------------------------------+
+
+8.
+MariaDB [dbpos_sib6]> SELECT SUM(harga_beli * stok) AS total_asset
+    -> FROM produk;
++-------------+
+| total_asset |
++-------------+
+|   480504000 |
++-------------+
+
+   3.3
+   1.
+   MariaDB [dbpos_sib6]> SELECT id, nama, stok,
+    ->     CASE
+    ->         WHEN stok <= min_stok THEN 'segera belanja'
+    ->         ELSE 'stok aman'
+    ->     END AS status_stok
+    -> FROM produk;
++----+-------------------+------+----------------+
+| id | nama              | stok | status_stok    |
++----+-------------------+------+----------------+
+|  1 | Televisi 21 inchs |    5 | stok aman      |
+|  2 | Televisi 40 inch  |    4 | stok aman      |
+|  3 | Kulkas 2 pintu    |    6 | stok aman      |
+|  4 | Meja Makan        |    4 | stok aman      |
+|  5 | Teh Kotak         |    6 | segera belanja |
+|  6 | PC Desktop HP     |    9 | stok aman      |
+|  7 | Teh Botol         |   53 | stok aman      |
+|  8 | Notebook Acer S   |    7 | stok aman      |
+|  9 | Notebook Lenovo   |    9 | stok aman      |
+| 11 | Laptop Lenovo     |    5 | stok aman      |
+| 15 | Kopi              |   10 | segera belanja |
+| 16 | Teh Sosro 2       |   10 | segera belanja |
+| 18 | Laptop Asus       |   10 | segera belanja |
+| 19 | Televisi 22 inc`  |    5 | stok aman      |
+| 20 | Televisi 23 inc   |    5 | stok aman      |
+| 21 | Televisi 24 inc   |    5 | stok aman      |
+| 22 | Televisi 25 inc   |    5 | stok aman      |
+| 24 | Televisi 27 inc   |    5 | stok aman      |
+| 25 | Televisi 28 inc   |    5 | stok aman      |
+| 26 | Televisi 29 inc   |    5 | stok aman      |
+| 27 | Teh Pucuk         |   10 | stok aman      |
+| 28 | Teh Pucuk2        |   10 | stok aman      |
++----+-------------------+------+----------------+
+
+2.
+MariaDB [dbpos_sib6]> SELECT
+    ->     nama,
+    ->     tmp_lahir,
+    ->     tgl_lahir,
+    ->     YEAR(CURDATE()) - YEAR(tgl_lahir) - (DATE_FORMAT(CURDATE(), '%m%d') < DATE_FORMAT(tgl_lahir, '%m%d')) AS umur,
+    ->     CASE
+    ->         WHEN YEAR(CURDATE()) - YEAR(tgl_lahir) < 17 THEN 'Muda'
+    ->         WHEN YEAR(CURDATE()) - YEAR(tgl_lahir) BETWEEN 17 AND 55 THEN 'Dewasa'
+    ->         ELSE 'Tua'
+    ->     END AS kategori_umur
+    -> FROM
+    ->     pelanggan;
++--------------------+------------+------------+------+---------------+
+| nama               | tmp_lahir  | tgl_lahir  | umur | kategori_umur |
++--------------------+------------+------------+------+---------------+
+| Agung Sedayu Group | Solo       | 2010-01-01 |   14 | Muda          |
+| Pandan Wangi       | Yogyakarta | 1950-01-01 |   74 | Tua           |
+| Sekar Mirah        | Kediri     | 1983-02-20 |   41 | Dewasa        |
+| Swandaru Geni      | Kediri     | 1981-01-04 |   43 | Dewasa        |
+| Pradabashu         | Pati       | 1985-04-02 |   39 | Dewasa        |
+| Gayatri Dwi        | Jakarta    | 1987-11-28 |   36 | Dewasa        |
+| Dewi Gyat          | Jakarta    | 1988-12-01 |   35 | Dewasa        |
+| Andre Haru         | Surabaya   | 1990-07-15 |   33 | Dewasa        |
+| Ahmad Hasan        | Surabaya   | 1992-10-15 |   31 | Dewasa        |
+| Cassanndra         | Belfast    | 1990-11-20 |   33 | Dewasa        |
+| Andi Wijaya        | Tangerang  | 2023-11-07 |    0 | Muda          |
+| Ira                | Jakarta    | 2023-11-07 |    0 | Muda          |
++--------------------+------------+------------+------+---------------+
+
+3.
+MariaDB [dbpos_sib6]> SELECT id, kode, nama,
+    ->     CASE kode
+    ->         WHEN 'TV01' THEN 'DVD Player'
+    ->         WHEN 'K001' THEN 'Rice Cooker'
+    ->         ELSE 'Tidak Ada'
+    ->     END AS bonus
+    -> FROM produk;
++----+--------+-------------------+-------------+
+| id | kode   | nama              | bonus       |
++----+--------+-------------------+-------------+
+|  1 | TV01   | Televisi 21 inchs | DVD Player  |
+|  2 | TV02   | Televisi 40 inch  | Tidak Ada   |
+|  3 | K001   | Kulkas 2 pintu    | Rice Cooker |
+|  4 | M001   | Meja Makan        | Tidak Ada   |
+|  5 | TK01   | Teh Kotak         | Tidak Ada   |
+|  6 | PC01   | PC Desktop HP     | Tidak Ada   |
+|  7 | TB01   | Teh Botol         | Tidak Ada   |
+|  8 | AC01   | Notebook Acer S   | Tidak Ada   |
+|  9 | LN01   | Notebook Lenovo   | Tidak Ada   |
+| 11 | L005   | Laptop Lenovo     | Tidak Ada   |
+| 15 | L112   | Kopi              | Tidak Ada   |
+| 16 | L113   | Teh Sosro 2       | Tidak Ada   |
+| 18 | L0015  | Laptop Asus       | Tidak Ada   |
+| 19 | TV0115 | Televisi 22 inc`  | Tidak Ada   |
+| 20 | TV0116 | Televisi 23 inc   | Tidak Ada   |
+| 21 | TV0117 | Televisi 24 inc   | Tidak Ada   |
+| 22 | TV0118 | Televisi 25 inc   | Tidak Ada   |
+| 24 | TV0120 | Televisi 27 inc   | Tidak Ada   |
+| 25 | TV0121 | Televisi 28 inc   | Tidak Ada   |
+| 26 | TV0122 | Televisi 29 inc   | Tidak Ada   |
+| 27 | THP001 | Teh Pucuk         | Tidak Ada   |
+| 28 | THP002 | Teh Pucuk2        | Tidak Ada   |
++----+--------+-------------------+-------------+
+
+  3.4
+  1.
+  MariaDB [dbpos_sib6]> SELECT tmp_lahir, COUNT(*) AS jumlah_pelanggan
+    -> FROM pelanggan
+    -> GROUP BY tmp_lahir;
++------------+------------------+
+| tmp_lahir  | jumlah_pelanggan |
++------------+------------------+
+| Belfast    |                1 |
+| Jakarta    |                3 |
+| Kediri     |                2 |
+| Pati       |                1 |
+| Solo       |                1 |
+| Surabaya   |                2 |
+| Tangerang  |                1 |
+| Yogyakarta |                1 |
++------------+------------------+
+
+2.
+MariaDB [dbpos_sib6]>  SELECT COUNT(*) AS jumlah_pelanggan_perempuan_jakarta
+    ->  FROM pelanggan
+    ->  WHERE jk = 'p' AND tmp_lahir = 'Jakarta';
++------------------------------------+
+| jumlah_pelanggan_perempuan_jakarta |
++------------------------------------+
+|                                  3 |
++------------------------------------+
+
+3.
+MariaDB [dbpos_sib6]> SELECT *
+    -> FROM pelanggan
+    -> WHERE YEAR(CURDATE()) - YEAR(tgl_lahir) - (DATE_FORMAT(CURDATE(), '%m%d') < DATE_FORMAT(tgl_lahir, '%m%d')) < (SELECT AVG(YEAR(CURDATE()) - YEAR(tgl_lahir) - (DATE_FORMAT(CURDATE(), '%m%d') < DATE_FORMAT(tgl_lahir, '%m%d'))) FROM pelanggan);
++----+-------+--------------------+----+-----------+------------+------------------+----------+
+| id | kode  | nama               | jk | tmp_lahir | tgl_lahir  | email            | kartu_id |
++----+-------+--------------------+----+-----------+------------+------------------+----------+
+|  1 | C001  | Agung Sedayu Group | L  | Solo      | 2010-01-01 | sedayu@gmail.com |        1 |
+|  9 | C009  | Ahmad Hasan        | L  | Surabaya  | 1992-10-15 | ahasan@gmail.com |        4 |
+| 11 | K0010 | Andi Wijaya        | L  | Tangerang | 2023-11-07 | andi@gmail.com   |        2 |
+| 12 | K0011 | Ira                | P  | Jakarta   | 2023-11-07 | ira@gmail.com    |        4 |
++----+-------+--------------------+----+-----------+------------+------------------+----------+
+
+4.
+MariaDB [dbpos_sib6]> SELECT id, nama, harga_beli, harga_jual
+    -> FROM produk
+    -> WHERE harga_jual > (
+    -> SELECT AVG(harga_jual)
+    -> FROM produk
+    -> );
++----+-------------------+------------+------------+
+| id | nama              | harga_beli | harga_jual |
++----+-------------------+------------+------------+
+|  1 | Televisi 21 inchs |    3500000 |   50500000 |
+| 19 | Televisi 22 inc`  |    3500000 |   50500000 |
+| 20 | Televisi 23 inc   |    3500000 |   50500000 |
+| 21 | Televisi 24 inc   |    3500000 |   50500000 |
+| 22 | Televisi 25 inc   |    3500000 |   50500000 |
+| 24 | Televisi 27 inc   |    3500000 |   50500000 |
+| 25 | Televisi 28 inc   |    3500000 |   50500000 |
+| 26 | Televisi 29 inc   |    3500000 |   50500000 |
++----+-------------------+------------+------------+
+
+5.
+MariaDB [dbpos_sib6]> SELECT *
+    ->      FROM pelanggan
+    ->      WHERE kartu_id IN (
+    ->       SELECT id
+    ->      FROM kartu
+    ->       WHERE iuran > 90000
+    ->      );
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+| id | kode  | nama               | jk | tmp_lahir  | tgl_lahir  | email             | kartu_id |
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+|  1 | C001  | Agung Sedayu Group | L  | Solo       | 2010-01-01 | sedayu@gmail.com  |        1 |
+|  2 | C002  | Pandan Wangi       | P  | Yogyakarta | 1950-01-01 | wangi@gmail.com   |        2 |
+|  3 | C003  | Sekar Mirah        | P  | Kediri     | 1983-02-20 | mirah@yahoo.com   |        1 |
+|  5 | C005  | Pradabashu         | L  | Pati       | 1985-04-02 | prada85@gmail.com |        2 |
+|  6 | C006  | Gayatri Dwi        | P  | Jakarta    | 1987-11-28 | gaya87@gmail.com  |        1 |
+|  7 | C007  | Dewi Gyat          | P  | Jakarta    | 1988-12-01 | giyat@gmail.com   |        1 |
+| 10 | C010  | Cassanndra         | P  | Belfast    | 1990-11-20 | casa90@gmail.com  |        1 |
+| 11 | K0010 | Andi Wijaya        | L  | Tangerang  | 2023-11-07 | andi@gmail.com    |        2 |
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+
+6.
+MariaDB [dbpos_sib6]> SELECT COUNT(*) AS jumlah_produk,
+    ->     AVG(harga_jual) AS rata_rata_harga_jual
+    ->     FROM produk
+    ->      WHERE harga_jual < (
+    ->         SELECT AVG(harga_jual)
+    ->         FROM produk
+    ->     );
++---------------+----------------------+
+| jumlah_produk | rata_rata_harga_jual |
++---------------+----------------------+
+|            14 |    4819785.714285715 |
++---------------+----------------------+
+
+7.
+MariaDB [dbpos_sib6]> SELECT *
+    ->     FROM pelanggan
+    ->      WHERE kartu_id IN (
+    ->         SELECT id
+    ->         FROM kartu
+    ->         WHERE diskon > 0.03
+    ->     );
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+| id | kode  | nama               | jk | tmp_lahir  | tgl_lahir  | email             | kartu_id |
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+|  1 | C001  | Agung Sedayu Group | L  | Solo       | 2010-01-01 | sedayu@gmail.com  |        1 |
+|  2 | C002  | Pandan Wangi       | P  | Yogyakarta | 1950-01-01 | wangi@gmail.com   |        2 |
+|  3 | C003  | Sekar Mirah        | P  | Kediri     | 1983-02-20 | mirah@yahoo.com   |        1 |
+|  5 | C005  | Pradabashu         | L  | Pati       | 1985-04-02 | prada85@gmail.com |        2 |
+|  6 | C006  | Gayatri Dwi        | P  | Jakarta    | 1987-11-28 | gaya87@gmail.com  |        1 |
+|  7 | C007  | Dewi Gyat          | P  | Jakarta    | 1988-12-01 | giyat@gmail.com   |        1 |
+| 10 | C010  | Cassanndra         | P  | Belfast    | 1990-11-20 | casa90@gmail.com  |        1 |
+| 11 | K0010 | Andi Wijaya        | L  | Tangerang  | 2023-11-07 | andi@gmail.com    |        2 |
++----+-------+--------------------+----+------------+------------+-------------------+----------+
+
