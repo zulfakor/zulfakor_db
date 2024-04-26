@@ -1,0 +1,203 @@
+Nama: Ahmad Ali Zulfakor (kelompok 4)
+Tugas 4 DataBase 
+  
+  4.1
+  3.
+  MariaDB [dbpos_sib6]> SELECT
+    ->     Pesanan.id AS id_pesanan,
+    ->     Pesanan.tanggal,
+    ->     Pesanan.total,
+    ->     Pelanggan.nama AS nama_pelanggan,
+    ->     Produk.kode AS kode_produk,
+    ->     Produk.nama AS nama_produk,
+    ->     Jenis_produk.nama AS jenis_produk,
+    ->     Pesanan_items.qty,
+    ->     Pesanan_items.harga AS harga_jual
+    -> FROM
+    ->     Pesanan
+    -> JOIN
+    ->     Pelanggan ON Pesanan.pelanggan_id = Pelanggan.id
+    -> JOIN
+    ->     Pesanan_items ON Pesanan.id = Pesanan_items.pesanan_id
+    -> JOIN
+    ->     Produk ON Pesanan_items.produk_id = Produk.id
+    -> JOIN
+    ->     Jenis_produk ON Produk.jenis_produk_id = Jenis_produk.id;
++------------+------------+---------+--------------------+-------------+-------------------+--------------+------+------------+
+| id_pesanan | tanggal    | total   | nama_pelanggan     | kode_produk | nama_produk       | jenis_produk | qty  | harga_jual |
++------------+------------+---------+--------------------+-------------+-------------------+--------------+------+------------+
+|          1 | 2015-11-04 | 9720000 | Agung Sedayu Group | TV01        | Televisi 21 inchs | elektroniks  |    1 |    5040000 |
+|          1 | 2015-11-04 | 9720000 | Agung Sedayu Group | K001        | Kulkas 2 pintu    | elektroniks  |    1 |    4680000 |
+|          2 | 2015-11-04 |   17500 | Sekar Mirah        | TK01        | Teh Kotak         | minuman      |    5 |       3500 |
+|          3 | 2015-11-04 |       0 | Gayatri Dwi        | TK01        | Teh Kotak         | minuman      |   10 |       3500 |
+|          3 | 2015-11-04 |       0 | Gayatri Dwi        | TV01        | Televisi 21 inchs | elektroniks  |    1 |    5040000 |
+|          5 | 2015-11-04 |       0 | Cassanndra         | TK01        | Teh Kotak         | minuman      |   10 |       3500 |
+|          6 | 2015-11-04 |       0 | Pandan Wangi       | TK01        | Teh Kotak         | minuman      |   20 |       3500 |
++------------+------------+---------+--------------------+-------------+-------------------+--------------+------+------------+
+
+  4.2
+  3.
+  MariaDB [dbpos_sib6]> CREATE VIEW pesanan_pelanggan_produk AS
+    ->     SELECT pesanan.id, pesanan.tanggal, pesanan.total, pelanggan.nama, pelanggan.kode,
+    ->    produk.nama AS nama_produk, jenis_produk.nama AS jenis_produk,
+    ->    pesanan_items.qty, produk.harga_jual
+    ->    FROM pesanan
+    ->   INNER JOIN pelanggan ON pesanan.pelanggan_id = pelanggan.id
+    ->   INNER JOIN pesanan_items ON pesanan.id = pesanan_items.pesanan_id
+    ->  INNER JOIN produk ON pesanan_items.produk_id = produk.id
+    ->  INNER JOIN jenis_produk ON produk.jenis_produk_id = jenis_produk.id;
+Query OK, 0 rows affected (0.014 sec)
+
+MariaDB [dbpos_sib6]>  SELECT * FROM pesanan_pelanggan_produk;
++----+------------+---------+--------------------+------+-------------------+--------------+------+------------+
+| id | tanggal    | total   | nama               | kode | nama_produk       | jenis_produk | qty  | harga_jual |
++----+------------+---------+--------------------+------+-------------------+--------------+------+------------+
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | C001 | Televisi 21 inchs | elektroniks  |    1 |   50500000 |
+|  1 | 2015-11-04 | 9720000 | Agung Sedayu Group | C001 | Kulkas 2 pintu    | elektroniks  |    1 |    4680000 |
+|  2 | 2015-11-04 |   17500 | Sekar Mirah        | C003 | Teh Kotak         | minuman      |    5 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | C006 | Teh Kotak         | minuman      |   10 |       3500 |
+|  3 | 2015-11-04 |       0 | Gayatri Dwi        | C006 | Televisi 21 inchs | elektroniks  |    1 |   50500000 |
+|  5 | 2015-11-04 |       0 | Cassanndra         | C010 | Teh Kotak         | minuman      |   10 |       3500 |
+|  6 | 2015-11-04 |       0 | Pandan Wangi       | C002 | Teh Kotak         | minuman      |   20 |       3500 |
++----+------------+---------+--------------------+------+-------------------+--------------+------+------------+
+  4.3
+  1.
+  MariaDB [sib_6]> START TRANSACTION;
+Query OK, 0 rows affected (0.002 sec)
+
+MariaDB [sib_6]> INSERT INTO produk (nama, stok, kode, jenis_produk_id)
+    ->     VALUES ('Produk A', 100, 'P001', 1), ('Produk B', 200, 'P002', 2), ('Produk C', 300, 'P003', 3);
+Query OK, 3 rows affected, 3 warnings (0.002 sec)
+Records: 3  Duplicates: 0  Warnings: 3
+
+MariaDB [sib_6]> UPDATE produk SET stok = stok - 10 WHERE nama = 'Produk A';
+Query OK, 1 row affected (0.001 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [sib_6]> SELECT * FROM produk;
++----+--------+-------------------+------------+------------+------+----------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+| id | kode   | nama              | harga_beli | harga_jual | stok | min_stok | foto                   | deskripsi
+
+     | jenis_produk_id |
++----+--------+-------------------+------------+------------+------+----------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+|  1 | TV01   | Televisi 21 inchs |    3500000 |   50500000 |    5 |        2 |                        | NULL
+
+     |               1 |
+|  2 | TV02   | Televisi 40 inch  |    5500000 |    7440000 |    4 |        2 | NULL                   | NULL
+
+     |               1 |
+|  3 | K001   | Kulkas 2 pintu    |    3500000 |    4680000 |    6 |        2 |                        | NULL
+
+     |               1 |
+|  4 | M001   | Meja Makan        |     500000 |     600000 |    4 |        3 | NULL                   | NULL
+
+     |               2 |
+|  5 | TK01   | Teh Kotak         |       3000 |       3500 |    6 |       10 | foto-5.png             | NULL
+
+     |               4 |
+|  6 | PC01   | PC Desktop HP     |    7000000 |    9984000 |    9 |        2 | NULL                   | NULL
+
+     |               5 |
+|  7 | TB01   | Teh Botol         |       2000 |       2500 |   53 |       10 | foto-7.jpg             | NULL
+
+     |               4 |
+|  8 | AC01   | Notebook Acer S   |    8000000 |   11232000 |    7 |        2 | NULL                   | NULL
+
+     |               5 |
+|  9 | LN01   | Notebook Lenovo   |    9000000 |   12480000 |    9 |        2 | NULL                   | NULL
+
+     |               5 |
+| 11 | L005   | Laptop Lenovo     |   13000000 |   16000000 |    5 |        2 |                        | NULL
+
+     |               1 |
+| 15 | L112   | Kopi              |      20000 |      30000 |   10 |       15 | foto-15.png            | Luwak White Coffee merupakan bubuk biji kopi luwak yang dikombinasikan dengan gurihnya krimer serta manisnya gula. Keharuman kopi serta rasa manisnya yang pas juga membuat popularitas Luwak White Coffee melejit. |               4 |
+| 16 | L113   | Teh Sosro 2       |      10000 |      15000 |   10 |       12 | .png                   | NULL
+
+     |               1 |
+| 18 | L0015  | Laptop Asus       |    3000000 |    5000000 |   10 |       20 | foto-65542ffa66604.jpg | NULL
+
+     |               1 |
+| 19 | TV0115 | Televisi 22 inc`  |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 20 | TV0116 | Televisi 23 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 21 | TV0117 | Televisi 24 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 22 | TV0118 | Televisi 25 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 24 | TV0120 | Televisi 27 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 25 | TV0121 | Televisi 28 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 26 | TV0122 | Televisi 29 inc   |    3500000 |   50500000 |    5 |        2 | NULL                   | NULL
+
+     |               1 |
+| 27 | THP001 | Teh Pucuk         |       4000 |       5000 |   10 |        2 | pucuk.jpg              | Teh pucuk adalah
+
+     |               4 |
+| 28 | THP002 | Teh Pucuk2        |       4000 |       5000 |   10 |        2 | pucuk.jpg              | Teh pucuk adalah
+
+     |               4 |
+| 32 | P001   | Produk A          |          0 |          0 |   90 |        0 | NULL                   | NULL
+
+     |               1 |
+| 33 | P002   | Produk B          |          0 |          0 |  200 |        0 | NULL                   | NULL
+
+     |               2 |
+| 34 | P003   | Produk C          |          0 |          0 |  300 |        0 | NULL                   | NULL
+
+     |               3 |
++----+--------+-------------------+------------+------------+------+----------+------------------------+---------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+-----------------+
+25 rows in set (0.001 sec)
+MariaDB [sib_6]> SAVEPOINT sp1;
+Query OK, 0 rows affected (0.000 sec)
+
+MariaDB [sib_6]> DELETE FROM pembayaran WHERE id = 1;
+
+before
+Query OK, 0 rows affected (0.002 sec)
+MariaDB [sib_6]> SELECT * FROM pembayaran WHERE id = 1;
++----+------------+------------+--------+------+------------+-------------------+
+| id | nokuitansi | tanggal    | jumlah | ke   | pesanan_id | status_pembayaran |
++----+------------+------------+--------+------+------------+-------------------+
+|  1 | MD001      | 0000-00-00 |  30000 |    1 |         11 | Lunas             |
++----+------------+------------+--------+------+------------+-------------------+
+1 row in set (0.001 sec)
+
+after
+MariaDB [sib_6]> DELETE FROM pembayaran WHERE id = 1;
+Query OK, 1 row affected (0.004 sec)
+
+MariaDB [sib_6]> SELECT * FROM pembayaran WHERE id = 1;
+Empty set (0.000 sec)
+
+MariaDB [sib_6]> ROLLBACK TO sp1;
+Query OK, 0 rows affected (0.001 sec)
+
+MariaDB [sib_6]> UPDATE kartu SET iuran = iuran + 5 WHERE id = 1;
+Query OK, 1 row affected (0.002 sec)
+Rows matched: 1  Changed: 1  Warnings: 0
+
+MariaDB [sib_6]> SELECT iuran FROM kartu WHERE id = 1;
++--------+
+| iuran  |
++--------+
+| 100005 |
++--------+
+1 row in set (0.000 sec)
+
+
+2. LOCK TABLES READ digunakan ketika Anda ingin membaca data dari tabel yang tidak akan diubah oleh transaksi lain selama Anda membaca datanya.
+Ini berguna ketika Anda melakukan operasi pembacaan besar yang memerlukan konsistensi data dan ingin memastikan bahwa tidak ada perubahan yang terjadi pada tabel selama proses pembacaan.
+LOCK TABLES READ dapat digunakan untuk mengunci tabel secara sementara untuk operasi pembacaan, dan melepaskan kunci setelah selesai.
+Penjelasan tentang kapan saat yang tepat menggunakan LOCK TABLES WRITE:
+
+3. LOCK TABLES WRITE digunakan ketika Anda ingin melakukan operasi penulisan (menambah, menghapus, atau mengubah data) pada tabel dan ingin memastikan tidak ada transaksi lain yang membaca atau menulis ke tabel tersebut selama operasi Anda sedang berlangsung.
+Ini penting ketika Anda melakukan operasi yang dapat memengaruhi konsistensi data dan Anda ingin memastikan bahwa tidak ada operasi lain yang memodifikasi tabel yang sama pada saat yang bersamaan.
+LOCK TABLES WRITE mengunci tabel secara eksklusif, sehingga tidak ada transaksi lain yang dapat membaca atau menulis ke tabel tersebut sampai kunci dilepaskan.
